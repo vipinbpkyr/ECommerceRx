@@ -10,4 +10,6 @@ import com.example.ecommercedemo.vo.Product
     exportSchema = false
 )
 abstract class AppDb : RoomDatabase() {
+    abstract fun cartDao(): CartDao
+
 }

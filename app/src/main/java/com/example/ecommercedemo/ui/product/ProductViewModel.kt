@@ -18,9 +18,6 @@ class ProductViewModel
         disposables.clear()
     }
 
-    fun fetchData2(){
-        repository.fetch2()
-    }
     fun fetchData() {
         disposables.add(repository.fetch()
             .subscribeOn(Schedulers.io())

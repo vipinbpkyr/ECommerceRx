@@ -3,6 +3,7 @@ package com.example.ecommercedemo.di
 import android.app.Application
 import androidx.room.Room
 import com.example.ecommercedemo.db.AppDb
+import com.example.ecommercedemo.db.CartDao
 import com.example.ecommercedemo.network.AppInterceptor
 import com.example.ecommercedemo.network.AppService
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -38,5 +39,11 @@ class AppModule {
             .databaseBuilder(app, AppDb::class.java, "ecomm.db")
             .fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCartDao(db: AppDb): CartDao {
+        return db.cartDao()
     }
 }
