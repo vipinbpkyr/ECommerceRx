@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:startDestination="@id/productListFragment">
+    <fragment
+            android:id="@+id/productListFragment"
+            android:name="com.example.ecommercedemo.ui.product.ProductListFragment"
+            android:label="ProductListFragment" >
+        <!--<action
+                android:id="@+id/showRepo"
+                app:destination="@id/repoFragment" />-->
+    </fragment>
+</navigation>
