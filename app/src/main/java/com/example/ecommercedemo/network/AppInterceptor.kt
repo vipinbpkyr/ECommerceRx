@@ -7,9 +7,9 @@ import timber.log.Timber
 class AppInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        Timber.d("xxx intercept url = %s originalRequest ${originalRequest}", originalRequest.url())
+        Timber.d("xxx intercept originalRequest $originalRequest")
         val response  = chain.proceed(originalRequest)
-        Timber.d("xxx intercept code ${response.code()}  originalRequest $originalRequest")
+        Timber.d("xxx intercept code ${response.code()}  originalRequest $response")
 
         return response
 

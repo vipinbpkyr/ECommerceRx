@@ -2,25 +2,26 @@ package com.example.ecommercedemo.ui.product
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.databinding.DataBindingComponent
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-
+import androidx.navigation.fragment.findNavController
+import com.android.example.github.binding.FragmentDataBindingComponent
+import com.example.ecommercedemo.AppExecutors
 import com.example.ecommercedemo.R
-import com.example.ecommercedemo.util.autoCleared
 import com.example.ecommercedemo.databinding.FragmentProductListBinding
 import com.example.ecommercedemo.di.Injectable
-import timber.log.Timber
+import com.example.ecommercedemo.util.autoCleared
+import com.example.ecommercedemo.vo.Resource
+import com.example.ecommercedemo.vo.test2.ProductResponse
+import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -32,6 +33,10 @@ class ProductListFragment : Fragment(), Injectable {
 
     lateinit var productViewModel: ProductViewModel
     var binding by autoCleared<FragmentProductListBinding>()
+    var dataBindingComponent: DataBindingComponent = FragmentDataBindingComponent(this)
+    @Inject
+    lateinit var appExecutors: AppExecutors
+    var adapter by autoCleared<ProductListAdapter>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,15 +50,33 @@ class ProductListFragment : Fragment(), Injectable {
         productViewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(ProductViewModel::class.java)
 
+        val prAdapter = ProductListAdapter(
+            dataBindingComponent = dataBindingComponent,
+            appExecutors = appExecutors
+        ){ product ->
+            val extras = bundleOf("title" to product.symbol1,
+                "description" to product.symbol3,
+                "image" to product.symbol2)
+            navController().navigate(R.id.productDetailsFragment, extras)
+        }
+
+        recyclerView.adapter = prAdapter
+        adapter = prAdapter
         productViewModel.response.observe(viewLifecycleOwner, Observer { result ->
-            processResponse(result?.data)
+            processResponse(result)
         })
         productViewModel.fetchData()
     }
 
-    private fun processResponse(data: String?) {
-        Timber.d("xxx processResponse data = %s", data)
+    private fun processResponse(resp: Resource<ProductResponse>) {
+//        Timber.d("xxx processResponse status ${resp.status} data ${resp.data} message ${resp.message}")
+        adapter.submitList(resp.data?.rows)
 
     }
 
+
+    /**
+     * Created to be able to override in tests
+     */
+    fun navController() = findNavController()
 }
