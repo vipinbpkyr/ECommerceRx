@@ -1,7 +1,7 @@
 package com.example.ecommercedemo.repository
 
 import com.example.ecommercedemo.network.AppService
-import com.example.ecommercedemo.vo.test2.ProductResponse
+import com.example.ecommercedemo.vo.ProductResponse
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.ResponseBody

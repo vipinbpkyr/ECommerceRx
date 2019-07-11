@@ -2,10 +2,11 @@ package com.example.ecommercedemo.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.ecommercedemo.vo.Cart
 import com.example.ecommercedemo.vo.Product
 
 @Database(
-    entities = [Product::class],
+    entities = [Product::class, Cart::class],
     version = 1,
     exportSchema = false
 )

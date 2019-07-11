@@ -3,7 +3,7 @@
     <data>
         <variable
                 name="product"
-                type="com.example.ecommercedemo.vo.test2.RowsItem"/>
+                type="com.example.ecommercedemo.vo.Product"/>
     </data>
     <LinearLayout
             android:orientation="vertical"
@@ -12,12 +12,12 @@
             android:padding="8dp">
 
         <ImageView
-                app:imageUrl="@{product.symbol2}"
+                app:imageUrl="@{product.image}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:srcCompat="@mipmap/ic_launcher" android:id="@+id/imageView"/>
         <TextView
-                android:text="@{product.symbol1}"
+                android:text="@{product.name}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -25,7 +25,7 @@
                 android:id="@+id/textView"/>
 
         <TextView
-                android:text="@{product.symbol3}"
+                android:text="@{product.description}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

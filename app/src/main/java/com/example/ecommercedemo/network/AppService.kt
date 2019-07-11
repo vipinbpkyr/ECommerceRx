@@ -1,6 +1,6 @@
 package com.example.ecommercedemo.network
 
-import com.example.ecommercedemo.vo.test2.ProductResponse
+import com.example.ecommercedemo.vo.ProductResponse
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single

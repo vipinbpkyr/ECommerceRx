@@ -8,21 +8,21 @@ import androidx.recyclerview.widget.DiffUtil
 import com.example.ecommercedemo.AppExecutors
 import com.example.ecommercedemo.R
 import com.example.ecommercedemo.ui.common.DataBoundListAdapter
-import com.example.ecommercedemo.vo.test2.RowsItem
 import com.example.ecommercedemo.databinding.ProductItemBinding
+import com.example.ecommercedemo.vo.Product
 
 class ProductListAdapter(private val dataBindingComponent: DataBindingComponent,
-                         appExecutors: AppExecutors, private val clickCallback: ((RowsItem) -> Unit)?) : DataBoundListAdapter<RowsItem, ProductItemBinding>(
+                         appExecutors: AppExecutors, private val clickCallback: ((Product) -> Unit)?) : DataBoundListAdapter<Product, ProductItemBinding>(
     appExecutors = appExecutors,
-    diffCallback = object : DiffUtil.ItemCallback<RowsItem>() {
-        override fun areItemsTheSame(oldItem: RowsItem, newItem: RowsItem): Boolean {
-            return oldItem.symbol1 == newItem.symbol1
-                    && oldItem.symbol2 == newItem.symbol2
+    diffCallback = object : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id
+                    && oldItem.name == newItem.name
         }
 
-        override fun areContentsTheSame(oldItem: RowsItem, newItem: RowsItem): Boolean {
-            return oldItem.symbol1 == newItem.symbol1
-                    && oldItem.symbol2 == newItem.symbol2
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id
+                    && oldItem.name == newItem.name
         }
     }
 ) {
@@ -43,7 +43,7 @@ class ProductListAdapter(private val dataBindingComponent: DataBindingComponent,
         return binding
     }
 
-    override fun bind(binding: ProductItemBinding, item: RowsItem) {
+    override fun bind(binding: ProductItemBinding, item: Product) {
         binding.product = item
     }
 }

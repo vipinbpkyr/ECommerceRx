@@ -4,8 +4,11 @@
     <data>
         <variable
                 name="product"
-                type="com.example.ecommercedemo.vo.test2.RowsItem"/>
+                type="com.example.ecommercedemo.vo.Product"/>
     </data>
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="match_parent">
+
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -14,13 +17,13 @@
             tools:context=".ui.product.ProductDetailsFragment">
 
         <ImageView
-                app:imageUrl="@{product.symbol2}"
+                app:imageUrl="@{product.image}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:srcCompat="@mipmap/ic_launcher"
                 android:id="@+id/imageView2"/>
         <TextView
-                android:text="@{product.symbol1}"
+                android:text="@{product.name}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -28,11 +31,19 @@
                 android:id="@+id/textView1"/>
 
         <TextView
-                android:text="@{product.symbol3}"
+                android:text="@{product.description}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center_horizontal"
                 android:id="@+id/textView3"/>
     </LinearLayout>
+        <Button
+                android:text="Add to Cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_gravity="bottom|end"
+                android:id="@+id/button"/>
+    </FrameLayout>
 </layout>

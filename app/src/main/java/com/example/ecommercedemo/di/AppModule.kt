@@ -9,6 +9,7 @@ import com.example.ecommercedemo.network.AppService
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
+import io.reactivex.disposables.CompositeDisposable
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -45,5 +46,10 @@ class AppModule {
     @Provides
     fun provideCartDao(db: AppDb): CartDao {
         return db.cartDao()
+    }
+
+    @Provides
+    fun provideCompositeDisposable(): CompositeDisposable {
+        return CompositeDisposable()
     }
 }

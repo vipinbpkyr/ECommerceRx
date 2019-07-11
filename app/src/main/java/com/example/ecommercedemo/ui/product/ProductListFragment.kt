@@ -19,7 +19,7 @@ import com.example.ecommercedemo.databinding.FragmentProductListBinding
 import com.example.ecommercedemo.di.Injectable
 import com.example.ecommercedemo.util.autoCleared
 import com.example.ecommercedemo.vo.Resource
-import com.example.ecommercedemo.vo.test2.ProductResponse
+import com.example.ecommercedemo.vo.ProductResponse
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
@@ -54,9 +54,9 @@ class ProductListFragment : Fragment(), Injectable {
             dataBindingComponent = dataBindingComponent,
             appExecutors = appExecutors
         ){ product ->
-            val extras = bundleOf("title" to product.symbol1,
-                "description" to product.symbol3,
-                "image" to product.symbol2)
+            val extras = bundleOf("title" to product.name,
+                "description" to product.description,
+                "image" to product.image)
             navController().navigate(R.id.productDetailsFragment, extras)
         }
 

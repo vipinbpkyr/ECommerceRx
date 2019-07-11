@@ -2,17 +2,19 @@ package com.example.ecommercedemo.ui.product
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ecommercedemo.db.CartDao
 import com.example.ecommercedemo.repository.Repository
+import com.example.ecommercedemo.vo.Cart
 import com.example.ecommercedemo.vo.Resource
-import com.example.ecommercedemo.vo.test2.ProductResponse
+import com.example.ecommercedemo.vo.ProductResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ProductViewModel
-@Inject constructor(private val repository: Repository): ViewModel() {
-    private val disposables = CompositeDisposable()
+@Inject constructor(private val repository: Repository, private val disposables: CompositeDisposable, private val cartDao: CartDao): ViewModel() {
+//    private val disposables = CompositeDisposable()
     val response: MutableLiveData<Resource<ProductResponse>> = MutableLiveData()
 
     override fun onCleared() {
@@ -34,5 +36,10 @@ class ProductViewModel
                 { throwable -> response.setValue(Resource.error("Error $throwable", null)) }
             )
         )
+    }
+
+    fun addToCart(cart : Cart) {
+
+        cartDao.insert()
     }
 }
