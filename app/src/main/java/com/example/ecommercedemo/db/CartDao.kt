@@ -1,5 +1,6 @@
 package com.example.ecommercedemo.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -22,11 +23,17 @@ abstract class CartDao {
     abstract fun getCartItems(): Flowable<List<Cart>>
 
     @Query("SELECT COUNT(*) from Cart")
-    abstract fun countCartItem(): Int
+    abstract fun countCartItem(): LiveData<Int>
+
+    @Query("SELECT COUNT(*) from Cart WHERE id = :ids")
+    abstract fun countCartItemById(ids: String): LiveData<Int>
 
     @Query("DELETE FROM Cart")
     abstract fun emptyCart()
 
+    @Query("DELETE FROM Cart WHERE id = :ids")
+    abstract fun emptyCartById(ids: String): Completable
+
     @Delete
-    abstract fun deleteCartItem(cart: Cart)
+    abstract fun deleteCartItem(cart: Cart): Completable
 }

@@ -1,20 +1,24 @@
 package com.example.ecommercedemo.ui.product
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ecommercedemo.db.CartDao
 import com.example.ecommercedemo.repository.Repository
 import com.example.ecommercedemo.vo.Cart
+import com.example.ecommercedemo.vo.Product
 import com.example.ecommercedemo.vo.Resource
 import com.example.ecommercedemo.vo.ProductResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProductViewModel
 @Inject constructor(private val repository: Repository, private val disposables: CompositeDisposable, private val cartDao: CartDao): ViewModel() {
-//    private val disposables = CompositeDisposable()
+    private lateinit var mSelectedProduct: Product
+    //    private val disposables = CompositeDisposable()
     val response: MutableLiveData<Resource<ProductResponse>> = MutableLiveData()
 
     override fun onCleared() {
@@ -38,8 +42,33 @@ class ProductViewModel
         )
     }
 
-    fun addToCart(cart : Cart) {
+    fun addToCart() {
+        disposables.add(cartDao.insert(Cart(mSelectedProduct.id, mSelectedProduct.name, mSelectedProduct.image))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ Timber.d("xxx addToCart success")},
+                { error -> Timber.d("xxx addToCart failed") }))
+    }
 
-        cartDao.insert()
+    fun removeCart() {
+        disposables.add(cartDao.emptyCartById(mSelectedProduct.id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ Timber.d("xxx removeCart success")},
+                { error -> Timber.d("xxx removeCart failed") }))
+    }
+
+    fun observeCartCount() : LiveData<Int>{
+        return cartDao.countCartItem()
+
+    }
+
+    fun observeCartCountById() : LiveData<Int>{
+        return cartDao.countCartItemById(mSelectedProduct.id)
+
+    }
+
+    fun setSelected(product: Product) {
+        mSelectedProduct = product
     }
 }

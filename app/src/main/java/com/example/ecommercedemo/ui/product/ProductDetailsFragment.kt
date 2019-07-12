@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
@@ -35,16 +37,27 @@ class ProductDetailsFragment : Fragment(), Injectable {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        productViewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(ProductViewModel::class.java)
+        activity?.let {
+            productViewModel = ViewModelProviders.of(it, viewModelFactory)
+                .get(ProductViewModel::class.java)
+        }
 
-        button.setOnClickListener { productViewModel.addToCart(Cart("id", "name", "image")) }
+        button.setOnClickListener { if (button.text.toString().equals("Add to Cart")) {
+            productViewModel.addToCart()
+        }else{
+            productViewModel.removeCart()
+
+        }
+        }
         textView1.text = arguments?.getString("title")
         textView3.text = arguments?.getString("description")
         imageView2.showImage(arguments?.getString("image"))
 //        Glide.with(this).load(arguments?.getString("image")).into(imageView)
-    }
 
+        productViewModel.observeCartCountById().observe(this, Observer { result ->
+        if(result > 0) button.text = "Remove from Cart"
+        else button.text = "Add to Cart"})
+    }
 
 }
 

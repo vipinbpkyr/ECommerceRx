@@ -47,13 +47,17 @@ class ProductListFragment : Fragment(), Injectable {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        productViewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(ProductViewModel::class.java)
+
+        activity?.let {
+            productViewModel = ViewModelProviders.of(it, viewModelFactory)
+                .get(ProductViewModel::class.java)
+        }
 
         val prAdapter = ProductListAdapter(
             dataBindingComponent = dataBindingComponent,
             appExecutors = appExecutors
         ){ product ->
+            productViewModel.setSelected(product)
             val extras = bundleOf("title" to product.name,
                 "description" to product.description,
                 "image" to product.image)
