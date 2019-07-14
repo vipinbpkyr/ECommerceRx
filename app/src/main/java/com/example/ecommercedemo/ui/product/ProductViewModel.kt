@@ -3,12 +3,11 @@ package com.example.ecommercedemo.ui.product
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.ecommercedemo.db.CartDao
 import com.example.ecommercedemo.repository.Repository
 import com.example.ecommercedemo.vo.Cart
 import com.example.ecommercedemo.vo.Product
-import com.example.ecommercedemo.vo.Resource
 import com.example.ecommercedemo.vo.ProductResponse
+import com.example.ecommercedemo.vo.Resource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -16,7 +15,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ProductViewModel
-@Inject constructor(private val repository: Repository, private val disposables: CompositeDisposable, private val cartDao: CartDao): ViewModel() {
+@Inject constructor(private val repository: Repository, private val disposables: CompositeDisposable): ViewModel() {
     private lateinit var mSelectedProduct: Product
     //    private val disposables = CompositeDisposable()
     val response: MutableLiveData<Resource<ProductResponse>> = MutableLiveData()
@@ -43,28 +42,33 @@ class ProductViewModel
     }
 
     fun addToCart() {
-        disposables.add(cartDao.insert(Cart(mSelectedProduct.id, mSelectedProduct.name, mSelectedProduct.image))
+        disposables.add(repository.insert(Cart(mSelectedProduct.id, mSelectedProduct.name, mSelectedProduct.image))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ Timber.d("xxx addToCart success")},
-                { error -> Timber.d("xxx addToCart failed") }))
+                { error -> Timber.d("xxx addToCart failed $error") }))
     }
 
     fun removeCart() {
-        disposables.add(cartDao.emptyCartById(mSelectedProduct.id)
+        disposables.add(repository.emptyCartById(mSelectedProduct.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ Timber.d("xxx removeCart success")},
-                { error -> Timber.d("xxx removeCart failed") }))
+                { error -> Timber.d("xxx removeCart failed $error") }))
     }
 
     fun observeCartCount() : LiveData<Int>{
-        return cartDao.countCartItem()
+        /*GlobalScope.launch(Dispatchers.Main) {
+             async(Dispatchers.IO){
+                return@async cartDao.countCartItem()
+            }.await()
 
+        }*/
+        return repository.countCartItem()
     }
 
     fun observeCartCountById() : LiveData<Int>{
-        return cartDao.countCartItemById(mSelectedProduct.id)
+        return repository.countCartItemById(mSelectedProduct.id)
 
     }
 

@@ -59,10 +59,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
         car_count = notifCount.findViewById<View>(R.id.count) as TextView
 
+// FIXME TODO
         productViewModel.observeCartCount().observe(this, Observer { result ->
-//            Toast.makeText(this,
+            //            Toast.makeText(this,
 //            "cart changes $result", Toast.LENGTH_LONG).show()
-            car_count.text = ""+result})
+            car_count.text = "$result"
+        })
 
         return super.onCreateOptionsMenu(menu)
     }

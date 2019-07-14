@@ -39,6 +39,7 @@ class AppModule {
         return Room
             .databaseBuilder(app, AppDb::class.java, "ecomm.db")
             .fallbackToDestructiveMigration()
+//            .allowMainThreadQueries()
             .build()
     }
 
