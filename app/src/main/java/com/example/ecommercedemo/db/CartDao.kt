@@ -10,6 +10,8 @@ import io.reactivex.Flowable
 import androidx.room.Update
 import androidx.room.Delete
 import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
 
 @Dao
 abstract class CartDao {
@@ -24,6 +26,9 @@ abstract class CartDao {
 
     @Query("SELECT COUNT(*) from Cart")
     abstract fun countCartItem(): LiveData<Int>
+
+    @Query("SELECT COUNT(*) from Cart")
+    abstract fun countCartItemRx(): Observable<Int>
 
     @Query("SELECT COUNT(*) from Cart WHERE id = :ids")
     abstract fun countCartItemById(ids: String): LiveData<Int>

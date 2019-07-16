@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         productViewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(ProductViewModel::class.java)
 
-
+        productViewModel.observeRxCartCount()
     }
 
     override fun onStart() {
@@ -45,24 +45,21 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     override fun onResume() {
         super.onResume()
 
-
     }
 
     override fun supportFragmentInjector() = dispatchingAndroidInjector
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         menuInflater.inflate(R.menu.main_menu, menu)
-        val item = menu?.findItem(R.id.badge)
-        MenuItemCompat.setActionView(item, R.layout.actionbar_cart_layout)
-        val notifCount = MenuItemCompat.getActionView(item) as LinearLayout
+        val item = menu.findItem(R.id.badge)
+        item.setActionView(R.layout.actionbar_cart_layout)
+        val notifyCount = item?.actionView
 
-        car_count = notifCount.findViewById<View>(R.id.count) as TextView
+        car_count = notifyCount?.findViewById<View>(R.id.count) as TextView
 
 // FIXME TODO
-        productViewModel.observeCartCount().observe(this, Observer { result ->
-            //            Toast.makeText(this,
-//            "cart changes $result", Toast.LENGTH_LONG).show()
+        productViewModel.cartCount.observe(this, Observer { result ->
             car_count.text = "$result"
         })
 

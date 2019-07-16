@@ -19,6 +19,7 @@ class ProductViewModel
     private lateinit var mSelectedProduct: Product
     //    private val disposables = CompositeDisposable()
     val response: MutableLiveData<Resource<ProductResponse>> = MutableLiveData()
+    val cartCount: MutableLiveData<Int> = MutableLiveData()
 
     override fun onCleared() {
         // Using clear will clear all, but can accept new disposable
@@ -57,22 +58,18 @@ class ProductViewModel
                 { error -> Timber.d("xxx removeCart failed $error") }))
     }
 
-    fun observeCartCount() : LiveData<Int>{
-        /*GlobalScope.launch(Dispatchers.Main) {
-             async(Dispatchers.IO){
-                return@async cartDao.countCartItem()
-            }.await()
+    fun observeCartCount() : LiveData<Int> = repository.countCartItem()
 
-        }*/
-        return repository.countCartItem()
-    }
+    fun observeRxCartCount() = disposables.add(repository.countCartItemRx()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe({ cartCount.value = it},
+            { error -> Timber.d("xxx cart count failed $error") }))
 
-    fun observeCartCountById() : LiveData<Int>{
-        return repository.countCartItemById(mSelectedProduct.id)
-
-    }
+    fun observeCartCountById() : LiveData<Int> = repository.countCartItemById(mSelectedProduct.id)
 
     fun setSelected(product: Product) {
         mSelectedProduct = product
     }
+
 }
