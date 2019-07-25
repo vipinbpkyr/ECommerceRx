@@ -2,19 +2,17 @@ package com.example.ecommercedemo.ui.product
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.example.ecommercedemo.R
 import com.example.ecommercedemo.di.Injectable
-import com.example.ecommercedemo.vo.Cart
 import kotlinx.android.synthetic.main.fragment_product_details.*
 import javax.inject.Inject
 
@@ -51,7 +49,7 @@ class ProductDetailsFragment : Fragment(), Injectable {
         }
         textView1.text = arguments?.getString("title")
         textView3.text = arguments?.getString("description")
-        imageView2.showImage(arguments?.getString("image"))
+        imageViewHeadShots.loadUrl(arguments?.getString("image"))
 //        Glide.with(this).load(arguments?.getString("image")).into(imageView)
 
         productViewModel.observeCartCountById().observe(this, Observer { result ->

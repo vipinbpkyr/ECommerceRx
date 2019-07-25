@@ -2,6 +2,7 @@ package com.example.ecommercedemo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import android.view.View
 import android.widget.LinearLayout
@@ -17,6 +18,9 @@ import com.example.ecommercedemo.ui.product.ProductViewModel
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
+import android.os.Looper
+import kotlin.random.Random
+
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
@@ -27,6 +31,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     lateinit var productViewModel: ProductViewModel
+
+    var mHandlerThread: Handler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,6 +42,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             .get(ProductViewModel::class.java)
 
         productViewModel.observeRxCartCount()
+
     }
 
     override fun onStart() {

@@ -20,7 +20,6 @@ class ProductViewModel
     //    private val disposables = CompositeDisposable()
     val response: MutableLiveData<Resource<ProductResponse>> = MutableLiveData()
     val cartCount: MutableLiveData<Int> = MutableLiveData()
-
     override fun onCleared() {
         // Using clear will clear all, but can accept new disposable
         disposables.clear()

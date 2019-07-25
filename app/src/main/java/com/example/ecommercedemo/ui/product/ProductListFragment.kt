@@ -18,10 +18,11 @@ import com.example.ecommercedemo.R
 import com.example.ecommercedemo.databinding.FragmentProductListBinding
 import com.example.ecommercedemo.di.Injectable
 import com.example.ecommercedemo.util.autoCleared
-import com.example.ecommercedemo.vo.Resource
 import com.example.ecommercedemo.vo.ProductResponse
+import com.example.ecommercedemo.vo.Resource
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
+
 
 /**
  * A simple [Fragment] subclass.
@@ -60,8 +61,8 @@ class ProductListFragment : Fragment(), Injectable {
             productViewModel.setSelected(product)
             val extras = bundleOf("title" to product.name,
                 "description" to product.description,
-                "image" to product.image)
-            navController().navigate(R.id.productDetailsFragment, extras)
+                "image" to "https://www.johnjacobseyewear.com/apps/johnjacobseyewear/data/headshots/women/130043/130043.jpg")
+            navController().navigate(com.example.ecommercedemo.R.id.productDetailsFragment, extras)
         }
 
         recyclerView.adapter = prAdapter
@@ -70,6 +71,14 @@ class ProductListFragment : Fragment(), Injectable {
             processResponse(result)
         })
         productViewModel.fetchData()
+
+
+        val pref = context?.applicationContext?.getSharedPreferences("MyPref", 0) // 0 - for private mode
+        val editor = pref?.edit()
+        editor?.putString("key_name", "string value") // Storing string
+        editor?.commit() // commit changes
+
+
     }
 
     private fun processResponse(resp: Resource<ProductResponse>) {
