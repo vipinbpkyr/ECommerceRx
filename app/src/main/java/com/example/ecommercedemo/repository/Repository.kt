@@ -1,19 +1,21 @@
 package com.example.ecommercedemo.repository
 
-import androidx.annotation.WorkerThread
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.ecommercedemo.db.CartDao
 import com.example.ecommercedemo.network.AppService
 import com.example.ecommercedemo.vo.Cart
 import com.example.ecommercedemo.vo.ProductResponse
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.graphics.BitmapFactory
+import timber.log.Timber
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 @Singleton
 class Repository @Inject constructor(private val appService: AppService, private val cartDao: CartDao) {
@@ -53,4 +55,19 @@ class Repository @Inject constructor(private val appService: AppService, private
             data.value = cartDao.countCartItem().value */
             return cartDao.countCartItem()
         }
+
+     fun getBitMaps(urls: List<String>): MutableList<Bitmap> {
+        var list = mutableListOf<Bitmap>()
+        urls.forEach { list.add(getBitmapFromUrl1(it)) }
+
+        return list
+    }
+
+     private fun getBitmapFromUrl1(imageUrl: String): Bitmap {
+        Timber.e("getBitmapFromUrl1 $imageUrl")
+        val url = URL(imageUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        val `is` = connection.inputStream
+        return BitmapFactory.decodeStream(`is`)
+    }
 }

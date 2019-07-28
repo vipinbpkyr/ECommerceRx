@@ -50,6 +50,7 @@ class ProductDetailsFragment : Fragment(), Injectable {
         textView1.text = arguments?.getString("title")
         textView3.text = arguments?.getString("description")
         imageViewHeadShots.loadUrl(arguments?.getString("image"))
+        imageViewHeadShots.downLoadMultipleImages()
 //        Glide.with(this).load(arguments?.getString("image")).into(imageView)
 
         productViewModel.observeCartCountById().observe(this, Observer { result ->

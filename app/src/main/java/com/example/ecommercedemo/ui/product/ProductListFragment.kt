@@ -78,6 +78,7 @@ class ProductListFragment : Fragment(), Injectable {
         editor?.putString("key_name", "string value") // Storing string
         editor?.commit() // commit changes
 
+        productViewModel.downLoadMultipleImages()
 
     }
 

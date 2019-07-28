@@ -10,17 +10,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
 
-public class ImageViewHeadShots extends ImageView {
+public class ImageViewHeadShots extends AppCompatImageView {
 
-    OnSwipeTouchListener mOnSwipeTouchListener;
-    ArrayList<Bitmap> chunkedImages;
-    int current = 4;
+    private OnSwipeTouchListener mOnSwipeTouchListener;
+    private ArrayList<Bitmap> chunkedImages;
+    private int current = 4;
 
     public ImageViewHeadShots(Context context) {
         super(context);
@@ -34,13 +35,7 @@ public class ImageViewHeadShots extends ImageView {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImageViewHeadShots(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-
-    public void setImage(Bitmap bitmap) {
-        chunkedImages = new ArrayList<Bitmap>(5);
+    private void setImage(Bitmap bitmap) {
         mOnSwipeTouchListener = new OnSwipeTouchListener(getContext()) {
             public void onSwipeTop() {
 //                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
@@ -93,12 +88,15 @@ public class ImageViewHeadShots extends ImageView {
 
         };
         setOnTouchListener(mOnSwipeTouchListener);
-        splitImage(bitmap, 7);
+        chunkedImages = splitImage(bitmap, 7);
+        setImageBitmap(chunkedImages.get(3));
 
     }
 
-    private void splitImage(Bitmap bitmap, int chunkNumbers) {
+    private ArrayList<Bitmap> splitImage(Bitmap bitmap, int chunkNumbers) {
         //For the number of rows and columns of the grid to be displayed
+        ArrayList<Bitmap> images = new ArrayList<Bitmap>(7);
+
         int rows, cols;
 
         //For height and width of the small image chunks
@@ -120,22 +118,22 @@ public class ImageViewHeadShots extends ImageView {
         int yCoord = 0;
         int xCoord = 0;
         for (int x = 0; x < rows; x++) {
-            chunkedImages.add(Bitmap.createBitmap(scaledBitmap, xCoord, yCoord, chunkWidth, chunkHeight));
+            images.add(Bitmap.createBitmap(scaledBitmap, xCoord, yCoord, chunkWidth, chunkHeight));
             xCoord += chunkWidth;
         }
 
 //        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
-        setImageBitmap(chunkedImages.get(3));
 //        invalidate();
 
+        return images;
     }
 
-    public class OnSwipeTouchListener implements OnTouchListener {
+    private class OnSwipeTouchListener implements OnTouchListener {
 
         private final GestureDetector gestureDetector;
 
-        public OnSwipeTouchListener(Context ctx) {
+        private OnSwipeTouchListener(Context ctx) {
             gestureDetector = new GestureDetector(ctx, new GestureListener());
         }
 
