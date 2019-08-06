@@ -10,40 +10,42 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
 
-import java.util.ArrayList
-import kotlin.coroutines.CoroutineContext
-
-class ImageViewHeadShots2 : AppCompatImageView {
+class ImageView360 : AppCompatImageView {
 
     private var mOnSwipeTouchListener: OnSwipeTouchListener? = null
     private var chunkedImages: MutableList<Bitmap>? = null
     private var current = 4
 
     companion object {
-
         private const val SWIPE_THRESHOLD = 100
         private const val SWIPE_VELOCITY_THRESHOLD = 100
     }
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private fun setImage(bitmap: Bitmap) {
+    fun setImage(bitmap: Bitmap, count: Int = 7) {
+        setBitMaps(splitImage(bitmap, count))
+    }
+
+    private fun setBitMaps(chunkedImages: MutableList<Bitmap>){
+        this.chunkedImages = chunkedImages
+        setImageBitmap(chunkedImages[3])
+
         mOnSwipeTouchListener = object : OnSwipeTouchListener(context) {
             override fun onSwipeTop() {
                 //                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
@@ -61,21 +63,21 @@ class ImageViewHeadShots2 : AppCompatImageView {
                 //                Log.d("OnSwipeTouchListener", "onScrolls " + diffX+ ", "+ distanceX);
 
                 if (distanceX < 0) {
-                    if (current < chunkedImages!!.size - 1) {
+                    if (current < chunkedImages.size - 1) {
                         current++
-                        setImageBitmap(chunkedImages!![current])
+                        setImageBitmap(chunkedImages[current])
                     } else {
-                        setImageBitmap(chunkedImages!![0])
+                        setImageBitmap(chunkedImages[0])
                         current = 0
                     }
 
                 } else {
                     if (current > 0) {
                         current--
-                        setImageBitmap(chunkedImages!![current])
+                        setImageBitmap(chunkedImages[current])
                     } else {
-                        setImageBitmap(chunkedImages!![chunkedImages!!.size - 1])
-                        current = chunkedImages!!.size - 1
+                        setImageBitmap(chunkedImages[chunkedImages.size - 1])
+                        current = chunkedImages.size - 1
                     }
 
                 }
@@ -94,10 +96,8 @@ class ImageViewHeadShots2 : AppCompatImageView {
             }
 
         }
-        setOnTouchListener(mOnSwipeTouchListener)
-        chunkedImages = splitImage(bitmap, 7)
-        setImageBitmap(chunkedImages!![3])
 
+        setOnTouchListener(mOnSwipeTouchListener)
     }
 
     private fun splitImage(bitmap: Bitmap, chunkNumbers: Int): ArrayList<Bitmap> {
@@ -105,10 +105,10 @@ class ImageViewHeadShots2 : AppCompatImageView {
         val images = ArrayList<Bitmap>(7)
 
         val rows: Int
-        val cols: Int
+        val cols: Int = chunkNumbers
 
         //For height and width of the small image chunks
-        val chunkHeight: Int
+        val chunkHeight: Int = bitmap.height
         val chunkWidth: Int
 
         //To store all the small image chunks in bitmap format in this list
@@ -119,9 +119,7 @@ class ImageViewHeadShots2 : AppCompatImageView {
         //        BitmapDrawable drawable = (BitmapDrawable) dra;
         //        Bitmap bitmap = drawable.getBitmap();
         val scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width, bitmap.height, true)
-        cols = chunkNumbers
         rows = cols
-        chunkHeight = bitmap.height
         chunkWidth = bitmap.width / cols
 
         //xCoord and yCoord are the pixel positions of the image chunks
@@ -139,7 +137,66 @@ class ImageViewHeadShots2 : AppCompatImageView {
         return images
     }
 
-    private open inner class OnSwipeTouchListener(ctx: Context) : View.OnTouchListener {
+    fun loadUrl(url: String?) {
+        Log.d("ImageViewHeadShots", "loadUrl $url")
+
+        //        Glide.with(this).load(R.drawable.ic_loading).into(imageViewLoadingHead);
+        //        setVisibility(VISIBLE);
+
+        Glide.with(this)
+            .asBitmap()
+            .load(url)
+            .into(object : SimpleTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    Log.d("ImageViewHeadShots", "setData onResourceReady " + resource.width)
+                    setImage(resource)
+
+                    //                        setVisibility(VISIBLE);
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                    Log.d("ImageViewHeadShots", "setData onLoadFailed")
+                    //                        setVisibility(GONE);
+                }
+            })
+    }
+
+    fun downLoadMultipleImages() {
+        // launch a coroutine in viewModelScope
+        GlobalScope.launch(Dispatchers.IO) {
+            // slowFetch()
+            val list: MutableList<Bitmap>
+            val urls = listOf("http://p.imgci.com/db/PICTURES/CMS/128400/128483.1.jpg","http://p.imgci.com/db/PICTURES/CMS/289000/289002.1.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/222900/222915.jpg","http://p.imgci.com/db/PICTURES/CMS/263700/263705.20.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/263700/263704.1.jpg","http://p.imgci.com/db/PICTURES/CMS/233200/233209.5.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/263700/263702.1.jpg")
+            list = getBitMaps(urls)
+            Timber.e("downLoadMultipleImages ${list.size} $list ")
+
+            chunkedImages = list
+            setImageBitmap(chunkedImages!![3])
+
+        }
+
+    }
+
+    private fun getBitMaps(urls: List<String>): MutableList<Bitmap> {
+        val list = mutableListOf<Bitmap>()
+        urls.forEach { list.add(getBitmapFromUrl1(it)) }
+
+        return list
+    }
+
+    private fun getBitmapFromUrl1(imageUrl: String): Bitmap {
+        Timber.e("getBitmapFromUrl1 $imageUrl")
+        val url = URL(imageUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        val `is` = connection.inputStream
+        return BitmapFactory.decodeStream(`is`)
+    }
+
+    private open inner class OnSwipeTouchListener(ctx: Context) : OnTouchListener {
 
         private val gestureDetector: GestureDetector
 
@@ -151,11 +208,21 @@ class ImageViewHeadShots2 : AppCompatImageView {
             return gestureDetector.onTouchEvent(event)
         }
 
+        open fun onScrolls(diffX: Float, distanceX: Float) {}
+
+        open fun onSwipeRight(diff: Float) {}
+
+        open fun onSwipeLeft(diff: Float) {}
+
+        open fun onSwipeTop() {}
+
+        open fun onSwipeBottom() {}
+
         private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
             internal var scroll = 0f
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
-                this@ImageViewHeadShots2.parent.requestDisallowInterceptTouchEvent(false)
+                this@ImageView360.parent.requestDisallowInterceptTouchEvent(false)
                 return true
             }
 
@@ -164,7 +231,7 @@ class ImageViewHeadShots2 : AppCompatImageView {
             }
 
             override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                this@ImageViewHeadShots2.parent.requestDisallowInterceptTouchEvent(true)
+                this@ImageView360.parent.requestDisallowInterceptTouchEvent(true)
                 val diffX = e2.x - e1.x
                 val abs = Math.abs(diffX)
                 val diff = Math.abs(abs - scroll)
@@ -210,79 +277,8 @@ class ImageViewHeadShots2 : AppCompatImageView {
                 return true
             }
 
-
         }
 
-        open fun onScrolls(diffX: Float, distanceX: Float) {}
-
-        open fun onSwipeRight(diff: Float) {}
-
-        open fun onSwipeLeft(diff: Float) {}
-
-        open fun onSwipeTop() {}
-
-        open fun onSwipeBottom() {}
-    }
-
-    fun loadUrl(url: String?) {
-        Log.d("ImageViewHeadShots", "loadUrl $url")
-
-        //        Glide.with(this).load(R.drawable.ic_loading).into(imageViewLoadingHead);
-        //        setVisibility(VISIBLE);
-
-        Glide.with(this)
-            .asBitmap()
-            .load(url)
-            .into(object : SimpleTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    Log.d("ImageViewHeadShots", "setData onResourceReady " + resource.width)
-                    setImage(resource)
-
-                    //                        setVisibility(VISIBLE);
-                }
-
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    super.onLoadFailed(errorDrawable)
-                    Log.d("ImageViewHeadShots", "setData onLoadFailed")
-                    //                        setVisibility(GONE);
-                }
-            })
-    }
-
-    fun downLoadMultipleImages() {
-        // launch a coroutine in viewModelScope
-        GlobalScope.launch(Dispatchers.IO) {
-            // slowFetch()
-            var list: MutableList<Bitmap>
-            var urls = listOf<String>("http://p.imgci.com/db/PICTURES/CMS/128400/128483.1.jpg","http://p.imgci.com/db/PICTURES/CMS/289000/289002.1.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/222900/222915.jpg","http://p.imgci.com/db/PICTURES/CMS/263700/263705.20.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/263700/263704.1.jpg","http://p.imgci.com/db/PICTURES/CMS/233200/233209.5.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/263700/263702.1.jpg")
-            list = getBitMaps(urls)
-            Timber.e("downLoadMultipleImages ${list.size} $list ")
-
-            chunkedImages = list
-            setImageBitmap(chunkedImages!![3])
-
-        }
-
-
-
-    }
-
-    fun getBitMaps(urls: List<String>): MutableList<Bitmap> {
-        var list = mutableListOf<Bitmap>()
-        urls.forEach { list.add(getBitmapFromUrl1(it)) }
-
-        return list
-    }
-
-    fun getBitmapFromUrl1(imageUrl: String): Bitmap {
-        Timber.e("getBitmapFromUrl1 $imageUrl")
-        val url = URL(imageUrl)
-        val connection = url.openConnection() as HttpURLConnection
-        val `is` = connection.inputStream
-        return BitmapFactory.decodeStream(`is`)
     }
 
 }

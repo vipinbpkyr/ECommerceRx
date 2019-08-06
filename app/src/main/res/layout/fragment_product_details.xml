@@ -17,7 +17,7 @@
             tools:context=".ui.product.ProductDetailsFragment">
 <!--                app:imageUrl="@{product.image}"
 -->
-        <com.example.ecommercedemo.ui.ImageViewHeadShots2
+        <com.example.ecommercedemo.ui.ImageView360
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:srcCompat="@mipmap/ic_launcher"
