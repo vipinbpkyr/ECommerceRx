@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.ecommercedemo.util.getBitmapFromAsset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ class ImageView360 : AppCompatImageView {
 
     private var mOnSwipeTouchListener: OnSwipeTouchListener? = null
     private var chunkedImages: MutableList<Bitmap>? = null
-    private var current = 4
+    private var current = 0
 
     companion object {
         private const val SWIPE_THRESHOLD = 100
@@ -44,7 +45,7 @@ class ImageView360 : AppCompatImageView {
 
     private fun setBitMaps(chunkedImages: MutableList<Bitmap>){
         this.chunkedImages = chunkedImages
-        setImageBitmap(chunkedImages[3])
+        setImageBitmap(chunkedImages[0])
 
         mOnSwipeTouchListener = object : OnSwipeTouchListener(context) {
             override fun onSwipeTop() {
@@ -62,7 +63,7 @@ class ImageView360 : AppCompatImageView {
             override fun onScrolls(diffX: Float, distanceX: Float) {
                 //                Log.d("OnSwipeTouchListener", "onScrolls " + diffX+ ", "+ distanceX);
 
-                if (distanceX < 0) {
+                if (distanceX > 0) {
                     if (current < chunkedImages.size - 1) {
                         current++
                         setImageBitmap(chunkedImages[current])
@@ -100,6 +101,16 @@ class ImageView360 : AppCompatImageView {
         setOnTouchListener(mOnSwipeTouchListener)
     }
 
+    fun loadFromAssets(){
+        val images = ArrayList<Bitmap>(7)
+        for(i in 0..35){
+            getBitmapFromAsset(context, "$i.jpeg")?.let { images.add(it) }
+//            images.add(getBitmapFromAsset(context, "$i.jpg"))
+        }
+
+        setBitMaps(images)
+
+    }
     private fun splitImage(bitmap: Bitmap, chunkNumbers: Int): ArrayList<Bitmap> {
         //For the number of rows and columns of the grid to be displayed
         val images = ArrayList<Bitmap>(7)
