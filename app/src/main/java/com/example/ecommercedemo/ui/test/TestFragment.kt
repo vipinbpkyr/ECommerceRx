@@ -31,6 +31,8 @@ class TestFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         imageViewHeadShots.loadFromAssets()
+//        imageViewHeadShots.autoRotate()
+        context?.let { imageViewHeadShots.setLifeCycleOwner(it, this) }
 
     }
 }

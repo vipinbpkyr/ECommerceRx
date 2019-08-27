@@ -25,4 +25,8 @@
               android:label="fragment_product_details" tools:layout="@layout/fragment_product_details"/>
     <fragment android:id="@+id/testFragment" android:name="com.example.ecommercedemo.ui.test.TestFragment"
               android:label="fragment_product_details" tools:layout="@layout/fragment_product_details"/>
+    <fragment android:id="@+id/cardFragment" android:name="com.example.ecommercedemo.ui.ml.CardFragment"
+              android:label="fragment_card" tools:layout="@layout/fragment_card"/>
+    <fragment android:id="@+id/gyro3Fragment" android:name="com.example.ecommercedemo.ui.gyro.Gyro3Fragment"
+              android:label="fragment_gyro3" tools:layout="@layout/fragment_gyro3"/>
 </navigation>

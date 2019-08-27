@@ -1,18 +1,28 @@
 package com.example.ecommercedemo.ui
 
+import android.app.Activity
 import android.content.Context
+import android.content.Context.SENSOR_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.hardware.Sensor
+import android.hardware.SensorManager
+import android.os.Handler
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.ecommercedemo.ui.gyro.DeviceOrientation
 import com.example.ecommercedemo.util.getBitmapFromAsset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,9 +31,12 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import kotlin.math.roundToInt
 
 class ImageView360 : AppCompatImageView {
 
+    private var previousPosition = 0
+    private var auto: Boolean = true
     private var mOnSwipeTouchListener: OnSwipeTouchListener? = null
     private var chunkedImages: MutableList<Bitmap>? = null
     private var current = 0
@@ -43,7 +56,7 @@ class ImageView360 : AppCompatImageView {
         setBitMaps(splitImage(bitmap, count))
     }
 
-    private fun setBitMaps(chunkedImages: MutableList<Bitmap>){
+    private fun setBitMaps(chunkedImages: MutableList<Bitmap>) {
         this.chunkedImages = chunkedImages
         setImageBitmap(chunkedImages[0])
 
@@ -62,24 +75,14 @@ class ImageView360 : AppCompatImageView {
 
             override fun onScrolls(diffX: Float, distanceX: Float) {
                 //                Log.d("OnSwipeTouchListener", "onScrolls " + diffX+ ", "+ distanceX);
+                scrollImage(distanceX > 0)
 
                 if (distanceX > 0) {
-                    if (current < chunkedImages.size - 1) {
-                        current++
-                        setImageBitmap(chunkedImages[current])
-                    } else {
-                        setImageBitmap(chunkedImages[0])
-                        current = 0
-                    }
+
+
 
                 } else {
-                    if (current > 0) {
-                        current--
-                        setImageBitmap(chunkedImages[current])
-                    } else {
-                        setImageBitmap(chunkedImages[chunkedImages.size - 1])
-                        current = chunkedImages.size - 1
-                    }
+
 
                 }
 
@@ -101,9 +104,47 @@ class ImageView360 : AppCompatImageView {
         setOnTouchListener(mOnSwipeTouchListener)
     }
 
-    fun loadFromAssets(){
+    private fun scrollImage(b: Boolean) {
+            if(b){
+                if (current < chunkedImages!!.size - 1) {
+                    current++
+                    setImageBitmap(chunkedImages?.get(current))
+                } else {
+                    setImageBitmap(chunkedImages?.get(0))
+                    current = 0
+                }
+            }else{
+                if (current > 0) {
+                    current--
+                    setImageBitmap(chunkedImages?.get(current))
+                } else {
+                    setImageBitmap(chunkedImages?.get(chunkedImages!!.size - 1))
+                    current = chunkedImages!!.size - 1
+                }
+            }
+
+
+    }
+
+    fun autoRotate() {
+
+        if (auto) {
+            Handler().postDelayed({
+                setImageBitmap(chunkedImages?.get(current))
+
+                if (current < chunkedImages!!.size - 1) {
+                    current++
+                } else current = 0
+
+                autoRotate()
+
+            }, 100)
+        }
+    }
+
+    fun loadFromAssets() {
         val images = ArrayList<Bitmap>(7)
-        for(i in 0..35){
+        for (i in 0..35) {
             getBitmapFromAsset(context, "$i.jpeg")?.let { images.add(it) }
 //            images.add(getBitmapFromAsset(context, "$i.jpg"))
         }
@@ -111,6 +152,7 @@ class ImageView360 : AppCompatImageView {
         setBitMaps(images)
 
     }
+
     private fun splitImage(bitmap: Bitmap, chunkNumbers: Int): ArrayList<Bitmap> {
         //For the number of rows and columns of the grid to be displayed
         val images = ArrayList<Bitmap>(7)
@@ -178,10 +220,15 @@ class ImageView360 : AppCompatImageView {
         GlobalScope.launch(Dispatchers.IO) {
             // slowFetch()
             val list: MutableList<Bitmap>
-            val urls = listOf("http://p.imgci.com/db/PICTURES/CMS/128400/128483.1.jpg","http://p.imgci.com/db/PICTURES/CMS/289000/289002.1.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/222900/222915.jpg","http://p.imgci.com/db/PICTURES/CMS/263700/263705.20.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/263700/263704.1.jpg","http://p.imgci.com/db/PICTURES/CMS/233200/233209.5.jpg",
-                "http://p.imgci.com/db/PICTURES/CMS/263700/263702.1.jpg")
+            val urls = listOf(
+                "http://p.imgci.com/db/PICTURES/CMS/128400/128483.1.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/289000/289002.1.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/222900/222915.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/263700/263705.20.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/263700/263704.1.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/233200/233209.5.jpg",
+                "http://p.imgci.com/db/PICTURES/CMS/263700/263702.1.jpg"
+            )
             list = getBitMaps(urls)
             Timber.e("downLoadMultipleImages ${list.size} $list ")
 
@@ -238,6 +285,7 @@ class ImageView360 : AppCompatImageView {
             }
 
             override fun onDown(e: MotionEvent): Boolean {
+                auto = false
                 return true
             }
 
@@ -290,6 +338,66 @@ class ImageView360 : AppCompatImageView {
 
         }
 
+    }
+
+    fun setLifeCycleOwner(context: Context, owner: LifecycleOwner){
+        var mSensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
+        var accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        var magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        var deviceOrientation = object:DeviceOrientation(){
+            override fun onRoll(roll: Float) {
+                Log.d("ImageView360", "onRoll roll $roll")
+
+                var pos:Int = roll.roundToInt() /10
+                Log.d("ImageView360", "onRoll pos $pos")
+                if (previousPosition != pos) {
+                    previousPosition = pos
+//                    scrollImage(pos > 0)
+                    var newPos = 0f
+                    if (pos < 0) {
+                        newPos = (chunkedImages!!.size - 1) + ((pos / 36f) * (chunkedImages!!.size - 1))
+                    }else if(pos == 0){
+                        newPos = 0f
+
+                    }else{
+                        newPos = ((pos / 36f) * (chunkedImages!!.size - 1))
+
+                    }
+                    Log.d("ImageView360", "onRoll newPos $newPos")
+                    current = newPos.toInt()
+                    setImageBitmap(chunkedImages?.get(current))
+
+                }
+            }
+        }
+        owner.lifecycle.addObserver(MyObserver(mSensorManager, magnetometer, accelerometer, deviceOrientation))
+
+    }
+
+    class MyObserver (var mSensorManager: SensorManager,var magnetometer: Sensor,
+                      var accelerometer: Sensor, var deviceOrientation: DeviceOrientation): LifecycleObserver {
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        fun connectListener() {
+            Log.d("ImageView360", "connectListener")
+            mSensorManager.registerListener(
+                deviceOrientation.getEventListener(),
+                accelerometer,
+                SensorManager.SENSOR_DELAY_UI
+            )
+            mSensorManager.registerListener(
+                deviceOrientation.getEventListener(),
+                magnetometer,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun disconnectListener() {
+            Log.d("ImageView360", "connectListener")
+            mSensorManager.unregisterListener(deviceOrientation.eventListener)
+
+        }
     }
 
 }

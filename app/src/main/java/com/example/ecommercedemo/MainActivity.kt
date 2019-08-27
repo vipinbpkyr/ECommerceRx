@@ -1,25 +1,20 @@
 package com.example.ecommercedemo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.MenuItemCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.ecommercedemo.ui.product.ProductViewModel
+import com.google.firebase.FirebaseApp
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
-import android.os.Looper
-import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
@@ -37,6 +32,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        FirebaseApp.initializeApp(this)
 
         productViewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(ProductViewModel::class.java)
